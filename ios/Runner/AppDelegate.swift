@@ -18,7 +18,7 @@ import WatchConnectivity
             print("Watch Session Supported")
             session = WCSession.default
             session?.delegate = self
-      			      session?.activate()
+            session?.activate()
         } else {
             print("Watch Session Not Supported on this device")
         }
@@ -98,7 +98,9 @@ extension AppDelegate: WCSessionDelegate {
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
             if let method = message["method"] as? String, let controller = self.window?.rootViewController as? FlutterViewController {
                 let channel = FlutterMethodChannel(
                     name: "com.example.watchApp",

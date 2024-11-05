@@ -26,19 +26,20 @@ class WatchViewModel:NSObject, ObservableObject,HKWorkoutSessionDelegate,HKLiveW
     func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
         for type in collectedTypes {
             if type == HKQuantityType.quantityType(forIdentifier: .heartRate)! {
-                       // Handle heart rate data
+                // Handle heart rate data
                 if let statistics = workoutBuilder.statistics(for: type as! HKQuantityType) {
-                           let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
-                           let value = statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0
-                    counter = Int(value)
-                    sendDataMessage(for: .sendHRToFlutter, data: ["counter": counter])
-                           print("Workout Heart Rate: \(value) BPM")
-                           // You can update UI or perform other actions with the heart rate data
-                       }
-                   }
-                   // Handle other collected data types if needed
-               }
+                    let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
+                    let value = statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+                    DispatchQueue.main.async { [weak self] in
+                        self?.counter = Int(value)
+                        self?.sendDataMessage(for: .sendHRToFlutter, data: ["counter": self?.counter ?? 0])
+                    }
+                    print("Workout Heart Rate: \(value) BPM")
+                }
+            }
+        }
     }
+
     
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
         //if workoutBuilder.workoutEvents.count > 0{
@@ -187,29 +188,26 @@ class WatchViewModel:NSObject, ObservableObject,HKWorkoutSessionDelegate,HKLiveW
       }
     
     
-    func readHealthKitData(type : HKSampleType) {
-        let query = HKSampleQuery(sampleType: type, predicate: nil, limit: 1, sortDescriptors: nil) { (query, results, error) in
-              if let error = error {
-                  // Handle query error
-                  print("Error querying heart rate: \(error.localizedDescription)")
-                  return
-              }
+    func readHealthKitData(type: HKSampleType) {
+        let query = HKSampleQuery(sampleType: type, predicate: nil, limit: 1, sortDescriptors: nil) { [weak self] (query, results, error) in
+            if let error = error {
+                print("Error querying heart rate: \(error.localizedDescription)")
+                return
+            }
 
-              if let heartRateSample = results?.first as? HKQuantitySample {
-                  // Access heart rate value
-                  let heartRate = heartRateSample.quantity.doubleValue(for: HKUnit(from: "count/min"))
-//                  counter = heartRate
-                  self.counter = Int(heartRate)
-                  self.sendDataMessage(for: .sendHRToFlutter, data: ["counter": self.counter])
-                         print("Heart Rate self.counter: \(self.counter) BPM")
-                         // You can update UI or perform other actions with the heart rate data
-                     
-                  print("Heart Rate Query: \(heartRate)")
-              }
-          }
-        
+            if let heartRateSample = results?.first as? HKQuantitySample {
+                let heartRate = heartRateSample.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                DispatchQueue.main.async {
+                    self?.counter = Int(heartRate)
+                    self?.sendDataMessage(for: .sendHRToFlutter, data: ["counter": self?.counter ?? 0])
+                    print("Heart Rate self.counter: \(self?.counter ?? 0) BPM")
+                }
+                print("Heart Rate Query: \(heartRate)")
+            }
+        }
         healthStore.execute(query)
     }
+
     
     
 }
