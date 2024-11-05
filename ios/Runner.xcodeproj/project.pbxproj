@@ -14,7 +14,8 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		C171496A2CD9FAD7008CBAF3 /* Flutter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C17148BD2CD9DF4C008CBAF3 /* Flutter.xcframework */; };
+		C18B34A42CDA009700FFF109 /* Flutter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C17148BD2CD9DF4C008CBAF3 /* Flutter.xcframework */; };
+		C18B34A52CDA009700FFF109 /* Flutter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C17148BD2CD9DF4C008CBAF3 /* Flutter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C1D1D52D2CD99B3D00828B18 /* HeartRate Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = C1D1D51F2CD99B3A00828B18 /* HeartRate Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				C18B34A52CDA009700FFF109 /* Flutter.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -90,7 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C171496A2CD9FAD7008CBAF3 /* Flutter.xcframework in Frameworks */,
+				C18B34A42CDA009700FFF109 /* Flutter.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

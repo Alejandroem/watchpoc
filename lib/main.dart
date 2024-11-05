@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-
   final String title;
 
   @override
@@ -34,22 +33,48 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _heartRate = 0;
   final MethodChannel channel = const MethodChannel('com.example.watchApp');
+
   Future<void> sendDataToNative() async {
-    // Send data to Native
-    await channel.invokeMethod(
-        "flutterToWatch", {"method": "sendHRToNative", "data": _heartRate});
+    try {
+      // Send data to Native
+      await channel.invokeMethod(
+        "flutterToWatch",
+        {"method": "sendHRToNative", "data": _heartRate},
+      );
+    } on PlatformException catch (e) {
+      // Handle errors in communication with native code
+      debugPrint("Failed to send data to native: ${e.message}");
+    } catch (e) {
+      // Handle any other errors
+      debugPrint("Unexpected error: $e");
+    }
   }
 
   Future<void> _initFlutterChannel() async {
     channel.setMethodCallHandler((call) async {
-      // Receive data from Native
-      switch (call.method) {
-        case "sendHRToFlutter":
-          _heartRate = call.arguments["data"]["counter"];
-          sendDataToNative();
-          break;
-        default:
-          break;
+      try {
+        // Receive data from Native
+        switch (call.method) {
+          case "sendHRToFlutter":
+            // Safely extract data and handle missing or unexpected fields
+            final data = call.arguments["data"];
+            if (data is Map && data.containsKey("counter")) {
+              setState(() {
+                _heartRate = data["counter"] ?? 0;
+              });
+              sendDataToNative();
+            } else {
+              debugPrint("Data format is invalid or missing 'counter' field.");
+            }
+            break;
+          default:
+            debugPrint("Unknown method called from native: ${call.method}");
+            break;
+        }
+      } on PlatformException catch (e) {
+        debugPrint("Error handling native call: ${e.message}");
+      } catch (e) {
+        debugPrint("Unexpected error: $e");
       }
     });
   }
