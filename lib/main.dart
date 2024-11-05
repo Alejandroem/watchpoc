@@ -63,28 +63,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF27C0C1),
-        title: Text(widget.title,style: TextStyle(
-          color: Colors.white
-        )),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
             Text(
               '$_heartRate BPM',
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold
               ),
             ),
-            SizedBox(height: 50,),
-             Text(
-              'Personalize Your Mental Health State',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            SizedBox(height: 50,),            
           ],
         ),
       ),
