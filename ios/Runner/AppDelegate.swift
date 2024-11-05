@@ -67,12 +67,27 @@ import WatchConnectivity
         let watchData: [String: Any] = ["method": method, "data": data]
         print("Sending data to watch: \(watchData)")
         
-        watchSession.sendMessage(watchData, replyHandler: { replyData in
-            print("Received reply from watch: \(replyData)")
-            result(true)
-        }, errorHandler: { error in
-            print("Error sending data to watch: \(error.localizedDescription)")
+        sendMessageWithRetry(watchData, retryCount: 1, result: result)
+    }
+    
+    private func sendMessageWithRetry(_ data: [String: Any], retryCount: Int, result: @escaping FlutterResult) {
+        guard let watchSession = session, watchSession.isReachable else {
+            print("Watch session not reachable. Message not sent.")
             result(false)
+            return
+        }
+        
+        watchSession.sendMessage(data, replyHandler: { replyData in
+            print("Message sent successfully with reply: \(replyData)")
+            result(true)
+        }, errorHandler: { [weak self] error in
+            print("Error sending message to watch: \(error.localizedDescription)")
+            if retryCount > 0 {
+                print("Retrying message...")
+                self?.sendMessageWithRetry(data, retryCount: retryCount - 1, result: result)
+            } else {
+                result(false)
+            }
         })
     }
 }
